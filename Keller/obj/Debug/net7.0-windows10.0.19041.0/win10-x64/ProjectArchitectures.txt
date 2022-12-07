@@ -1,0 +1,1 @@
+C:\Users\joena\RiderProjects\Keller\Keller\Keller.csproj;x64

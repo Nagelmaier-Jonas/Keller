@@ -1,0 +1,45 @@
+﻿@page "/"
+@using Firebase.Database
+@using Firebase.Database.Query
+@using Keller.Entities
+@using System.Collections.ObjectModel
+
+<MudTextField @bind-Value="ProductName" Label="ProductName"/>
+
+<MudButton OnClick="AddToDb">Add Product</MudButton>
+
+@foreach(var product in Products){
+        <MudCard>
+            <MudCardContent>
+                <MudText Typo="Typo.h5">@product.Name</MudText>
+            </MudCardContent>
+        </MudCard>
+    }
+
+@code{
+
+    private string ProductName { get; set; }
+
+    private ObservableCollection<Product> Products { get; set; } = new();
+
+    readonly FirebaseClient _firebaseClient = new("https://kellerverwaltung-d6218-default-rtdb.europe-west1.firebasedatabase.app/");
+
+    //fill the list with the products from the firebase database
+    protected override async Task OnInitializedAsync()
+    {
+        var products = await _firebaseClient.Child("Products").OnceAsync<Product>();
+        foreach (var product in products)
+        {
+            Products.Add(product.Object);
+        }
+    }
+
+    private void AddToDb()
+    {
+        _firebaseClient.Child("Products").PostAsync(new Product
+        {
+            Name = ProductName,
+        });
+    }
+
+}
